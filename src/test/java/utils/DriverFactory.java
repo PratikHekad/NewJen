@@ -5,21 +5,18 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 
 import java.net.URL;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
+import io.github.bonigarcia.wdm.WebDriverManager;
 
 public class DriverFactory {
 
     private static ThreadLocal<WebDriver> driver = new ThreadLocal<>();
 
     public static WebDriver initDriver() {
-        try {
-            ChromeOptions options = new ChromeOptions();
-            driver.set(new RemoteWebDriver(
-                    new URL("http://localhost:4444/wd/hub"),
-                    options));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return getDriver();
+        WebDriverManager.chromedriver().setup();
+        driver.set(new ChromeDriver());
+        return driver.get();
     }
 
     public static WebDriver getDriver() {
@@ -27,7 +24,9 @@ public class DriverFactory {
     }
 
     public static void quitDriver() {
-        getDriver().quit();
-        driver.remove();
+        if (driver.get() != null) {
+            driver.get().quit();
+            driver.remove();
+        }
     }
 }
